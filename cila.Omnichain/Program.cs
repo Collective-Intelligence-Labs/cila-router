@@ -1,4 +1,5 @@
 ﻿using cila.Omnichain.Services;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,9 +7,24 @@ var builder = WebApplication.CreateBuilder(args);
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
 // Add services to the container.
-builder.Services.AddGrpc().AddJsonTranscoding();
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Setup a HTTP/2 endpoint without TLS.
+    options.ListenLocalhost(5025, o => o.Protocols =
+        HttpProtocols.Http2);
+});
 
 var app = builder.Build();
+
+IWebHostEnvironment env = app.Environment;
+
+if (env.IsDevelopment())
+{
+    app.MapGrpcReflectionService();
+}
 
 // Configure the HTTP request pipeline.
 app.MapGrpcService<OmnichainService>();
