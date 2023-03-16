@@ -1,12 +1,22 @@
 ﻿syntax = "proto3";  
 
+import "google/api/annotations.proto";
+
 package cila;
 
 option csharp_namespace = "cila.Omnichain";
 
 service Omnichain {
-  rpc Mint (MintRequest) returns (OmnichainResponse);
-  rpc Transfer (TransferRequest) returns (OmnichainResponse);
+  rpc Mint (MintRequest) returns (OmnichainResponse) {
+    option (google.api.http) = {
+      post: "/v1/omnichain/mint"
+    };
+  };
+  rpc Transfer (TransferRequest) returns (OmnichainResponse) {
+      option (google.api.http) = {
+      post: "/v1/omnichain/transfer"
+    };
+  };
 }
 
 message MintRequest  

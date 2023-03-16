@@ -14,13 +14,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.52.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Routers\" />
+    <None Remove="google\" />
+    <None Remove="google\api\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Routers\" />
+    <Folder Include="google\" />
+    <Folder Include="google\api\" />
   </ItemGroup>
 </Project>
