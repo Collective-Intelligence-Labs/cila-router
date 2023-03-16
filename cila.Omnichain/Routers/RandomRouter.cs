@@ -1,4 +1,6 @@
 ﻿using System;
+using cila.Omnichain.Infrastructure;
+
 namespace cila.Omnichain.Routers
 {
 	public enum Chains
@@ -13,12 +15,18 @@ namespace cila.Omnichain.Routers
 		{
 		}
 
-		public Task<int> Route()
+		public async Task<IChainClient> Route()
 		{
 			var random = new Random();
 			var route = random.Next() % 2 == 0 ? Chains.Ethereum : Chains.Gnosis;
-			return Task.FromResult((int) route);
-		}
-	}
+
+            switch (route)
+            {
+                default:
+                    return await Task.FromResult(new EthChainClient("rpc", "contract", "abi"));
+            }
+
+        }
+    }
 }
 

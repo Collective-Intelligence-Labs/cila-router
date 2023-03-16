@@ -21,7 +21,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
         return Task.FromResult(new OmnichainResponse
         {
-            ChainId = route.Result,
+            ChainId = 0,
             Success = true
         });
     }
@@ -32,7 +32,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
         return Task.FromResult(new OmnichainResponse
         {
-            ChainId = route.Result,
+            ChainId = 0,
             Success = true
         });
     }
