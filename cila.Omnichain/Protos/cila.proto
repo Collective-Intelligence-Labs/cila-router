@@ -1,0 +1,44 @@
+﻿syntax = "proto3";  
+
+package cila;
+
+option csharp_namespace = "cila.Omnichain";
+
+service Omnichain {
+  rpc Mint (MintRequest) returns (OmnichainResponse);
+  rpc Transfer (TransferRequest) returns (OmnichainResponse);
+}
+
+message MintRequest  
+{  
+   string hash = 1;
+   string sender = 2;
+   bytes signature = 3;
+}  
+  
+message TransferRequest  
+{  
+   string hash = 1;
+   string sender = 2;
+   string recipient = 3;  
+   bytes signature = 4;
+}
+
+message OmnichainResponse
+{
+    int32 chain_id = 1;
+    bool success = 2;
+}
+
+message ItemTransferedEvent  
+{  
+   string hash = 1;
+   string from = 2;
+   string to = 3;  
+} 
+
+message ItemMintedEvent  
+{  
+   string hash = 1;  
+   string owner = 2; 
+}
