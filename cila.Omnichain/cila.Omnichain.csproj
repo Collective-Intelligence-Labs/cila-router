@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>f532c067-b656-4c03-8950-b50a255c45d0</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
@@ -16,4 +17,10 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Routers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Routers\" />
+  </ItemGroup>
 </Project>
