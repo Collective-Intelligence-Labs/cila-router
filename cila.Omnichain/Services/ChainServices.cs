@@ -14,8 +14,10 @@ namespace OmniChain
         void Subscribe(Action<OmniChainEvent> action);
     }
 
-    public class OmniChainOperation
+    public class OmniChainOperation: CallInput
     {
+        [Parameter("payload", "_payload", 1)]
+        public byte[] Payload { get; set; }
     }
 
     public class EthChainClient : IChainClient
@@ -41,26 +43,14 @@ namespace OmniChain
 
         async Task Send(OmniChainOperation op)
         {
-            var operation = new DispatchOperation {
-
-                Payload = op
-            };
-            var dispatchOperationHandler = _contract.GetFunction<DispatchOperation>();
-            var result = await dispatchOperationHandler.CallAsync(operation); 
+            var dispatchOperationHandler = _contract.GetFunction<OmniChainOperation>();
+            var result = await dispatchOperationHandler.CallAsync(op); 
         }
 
         void IChainClient.Send(OmniChainOperation op)
         {
             Send(op).GetAwaiter().GetResult();
         }
-    }
-
-    internal class DispatchOperation: CallInput
-    {
-        [Parameter("output", "_output", 1)]
-        public string Output { get; set; }
-
-        public object Payload { get; set; }
     }
 
     public class OmniChainEvent
