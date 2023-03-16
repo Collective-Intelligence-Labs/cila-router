@@ -38,7 +38,20 @@ namespace OmniChain
 
         public void Subscribe(Action<OmniChainEvent> action)
         {
-            throw new NotImplementedException();
+            SubscribeAsync(action).GetAwaiter().GetResult();
+        }
+
+        public async Task SubscribeAsync(Action<OmniChainEvent> action)
+        {
+            var eventHandler = _web3.Eth.GetEvent<OmniChainEvent>(_contract.Address);
+            eventHandler.GetLogsForEvent
+            var subscription = await eventHandler.CreateFilterAsync<OmniChainEvent>(
+        }
+        
+        private static Task HandleEvent(EventLog<OmniChainEvent> log)
+        {
+            Console.WriteLine($"New Event: Sender: {log.Event.Sender}, Value: {log.Event.Value}");
+            return Task.CompletedTask;
         }
 
         async Task Send(OmniChainOperation op)
@@ -53,7 +66,7 @@ namespace OmniChain
         }
     }
 
-    public class OmniChainEvent
+    public class OmniChainEvent: IEventDTO
     {
         public string ChainID {get;set;}
 
@@ -62,7 +75,7 @@ namespace OmniChain
         public int BlockNumber {get;set;}
 
         public string AggregateID {get;set;}
-            
+
         public int EventNumber {get;set;}
 
         public int EventType {get;set;}
