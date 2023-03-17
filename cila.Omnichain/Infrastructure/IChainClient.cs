@@ -2,6 +2,6 @@
 {
     public interface IChainClient
     {
-        void Send(OmnichainOperation op);
+        Task SendAsync(OmnichainOperation op);
     }
 }

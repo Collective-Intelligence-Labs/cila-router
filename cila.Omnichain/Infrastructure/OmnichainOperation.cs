@@ -1,16 +1,17 @@
 ﻿using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
 using Nethereum.RPC.Eth.DTOs;
 
 namespace cila.Omnichain.Infrastructure
 {
     public class OmnichainOperation : CallInput
     {
-        [Parameter("payload", "_payload", 1)]
-        public byte[] Payload { get; private set; }
+        [Parameter("bytes", "opBytes")]
+        public byte[] OpBytes { get; private set; }
 
-        public OmnichainOperation(byte[] payload)
+        public OmnichainOperation(byte[] opBytes)
         {
-            Payload = payload;
+            OpBytes = opBytes;
         }
     }
 }

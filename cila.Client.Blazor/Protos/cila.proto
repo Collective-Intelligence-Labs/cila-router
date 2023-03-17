@@ -32,6 +32,7 @@ message OmnichainResponse
 {
     string chain_id = 1;
     bool success = 2;
+    string sender = 3;
 }
 
 message ItemTransferedEvent  

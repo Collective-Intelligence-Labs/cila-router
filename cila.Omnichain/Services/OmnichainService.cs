@@ -1,5 +1,7 @@
 ﻿using Grpc.Core;
 using cila.Omnichain.Routers;
+using cila.Omnichain.Infrastructure;
+using System.Text;
 
 namespace cila.Omnichain.Services;
 
@@ -15,16 +17,36 @@ public class OmnichainService : Omnichain.OmnichainBase
         _logger = logger;
     }
 
-    public override Task<OmnichainResponse> Mint(MintRequest request, ServerCallContext context)
+    public override async Task<OmnichainResponse> Mint(MintRequest request, ServerCallContext context)
     {
-        var route = _router.Route();
-        var random = new Random();
-
-        return Task.FromResult(new OmnichainResponse
+        try
         {
-            ChainId = random.Next(2).ToString(),
-            Success = true
-        });
+            var route = _router.Route().Result as EthChainClient;
+            var random = new Random();
+
+            var op = new OmnichainOperation(Encoding.Unicode.GetBytes(request.ToString()));
+
+            //await route.SendAsync(op);
+
+            return new OmnichainResponse
+            {
+                ChainId = random.Next(2).ToString(),
+                Success = true,
+                Sender = request.Sender
+            };
+        }
+        catch (Exception ex)
+        {
+            var e = ex.Message;
+
+            return new OmnichainResponse
+            {
+                ChainId = null,
+                Success = false,
+                Sender = request.Sender
+            };
+        }
+        
     }
 
     public override Task<OmnichainResponse> Transfer(TransferRequest request, ServerCallContext context)
@@ -35,7 +57,8 @@ public class OmnichainService : Omnichain.OmnichainBase
         return Task.FromResult(new OmnichainResponse
         {
             ChainId = random.Next(2).ToString(),
-            Success = true
+            Success = true,
+            Sender = request.Sender
         });
     }
 }

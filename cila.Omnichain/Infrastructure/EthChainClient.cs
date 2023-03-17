@@ -1,6 +1,7 @@
 
 using Nethereum.Web3;
 using Nethereum.Contracts;
+using System.Text;
 
 namespace cila.Omnichain.Infrastructure
 {
@@ -8,7 +9,13 @@ namespace cila.Omnichain.Infrastructure
     public class EthChainClient : IChainClient
     {
         private Web3 _web3;
-        private Contract _contract;
+        public Contract _contract;
+
+        public EthChainClient(string rpc, string contract)
+        {
+            _web3 = new Web3(rpc);
+            _contract = _web3.Eth.GetContract<OmnichainOperation>(contract);
+        }
 
         public EthChainClient(string rpc, string contract, string abi)
         {
@@ -16,15 +23,18 @@ namespace cila.Omnichain.Infrastructure
             _contract = _web3.Eth.GetContract(abi, contract);
         }
 
-        async Task Send(OmnichainOperation op)
+        public async Task SendAsync(OmnichainOperation op)
         {
-            var dispatchOperationHandler = _contract.GetFunction<OmnichainOperation>();
-            var result = await dispatchOperationHandler.CallAsync(op);
-        }
+            var function = _contract.GetFunction("dispatch");
+            //var p = function.ConvertJsonToObjectInputParameters("{\n  \"opBytes\": \"hello\"\n}");
 
-        void IChainClient.Send(OmnichainOperation op)
-        {
-            Send(op).GetAwaiter().GetResult();
+
+            //var dispatchOperationHandler = _contract.GetFunction<OmnichainOperation>();
+            var result = function.CallAsync(op).GetAwaiter().GetResult;
+
+            
+
+            var a = 10;
         }
     }
 }
