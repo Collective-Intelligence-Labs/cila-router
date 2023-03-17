@@ -13,17 +13,17 @@
 
 <p>
     Item hash: 
-    <input type="text" @bind="@hash" @oninput="OnHashInputEvent" />
+    <input type="text" @bind="@hash" @oninput="OnHashInputEvent" style="width: 400px;" />
 </p>
 
 <p>
     Transfer to:
-    <input type="text" @bind="@to" @oninput="OnToInputEvent" />
+    <input type="text" @bind="@to" @oninput="OnToInputEvent" style="width: 400px;" />
 </p>
 
 <p>
-    Private key: 
-    <input type="text" @bind="@pk" @oninput="OnPkInputEvent" />
+    Private key:
+    <textarea @bind="@pk" @oninput="OnPkInputEvent" style="width: 400px;"></textarea>
 </p>
 
 <p>
