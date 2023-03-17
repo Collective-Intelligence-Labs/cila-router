@@ -23,12 +23,12 @@ namespace cila.Omnichain.Infrastructure
             _contract = _web3.Eth.GetContractHandler(contract);
         }
 
-        public async Task SendAsync(OmnichainOperation op)
+        public async Task SendAsync(Operation op)
         {
             var function = _contract.GetFunction<DispatchFunction>();
             var req = new DispatchFunction
             {
-                OpBytes = op.ByteData
+                OpBytes = Encoding.Unicode.GetBytes(op.ToString())
             };
 
             var gasEstimate = await _contract.EstimateGasAsync<DispatchFunction>(req);

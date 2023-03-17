@@ -25,4 +25,7 @@
   <ItemGroup>
     <Protobuf Include="Protos\cila.proto" GrpcServices="Client" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig" />
+  </ItemGroup>
 </Project>

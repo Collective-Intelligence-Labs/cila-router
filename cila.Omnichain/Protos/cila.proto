@@ -5,12 +5,8 @@ package cila;
 option csharp_namespace = "cila.Omnichain";
 
 service Omnichain {
-  rpc Mint (MintRequest) returns (OmnichainResponse) {
-
-  };
-  rpc Transfer (TransferRequest) returns (OmnichainResponse) {
-
-  };
+  rpc Mint (MintRequest) returns (OmnichainResponse);
+  rpc Transfer (TransferRequest) returns (OmnichainResponse);
 }
 
 message MintRequest  

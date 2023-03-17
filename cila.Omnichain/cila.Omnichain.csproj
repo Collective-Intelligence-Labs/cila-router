@@ -11,6 +11,7 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <Protobuf Include="Protos\cila.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\sol.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,12 +24,8 @@
 
   <ItemGroup>
     <None Remove="Routers\" />
-    <None Remove="google\" />
-    <None Remove="google\api\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Routers\" />
-    <Folder Include="google\" />
-    <Folder Include="google\api\" />
   </ItemGroup>
 </Project>
