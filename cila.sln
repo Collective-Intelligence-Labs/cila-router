@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1705.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cila.Omnichain", "cila.Omnichain\cila.Omnichain.csproj", "{34EC0099-A220-4111-ADD6-71C4180B43D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cila.Client.Blazor", "cila.Client.Blazor\cila.Client.Blazor.csproj", "{BFCA4744-56D2-41FF-B01C-D33521411536}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{34EC0099-A220-4111-ADD6-71C4180B43D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34EC0099-A220-4111-ADD6-71C4180B43D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34EC0099-A220-4111-ADD6-71C4180B43D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFCA4744-56D2-41FF-B01C-D33521411536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFCA4744-56D2-41FF-B01C-D33521411536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFCA4744-56D2-41FF-B01C-D33521411536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFCA4744-56D2-41FF-B01C-D33521411536}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

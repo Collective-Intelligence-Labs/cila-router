@@ -1,0 +1,83 @@
+﻿@using System.Text
+@using Nethereum.Signer
+@using Google.Protobuf.WellKnownTypes
+@using cila.Omnichain;
+
+@inject GrpcChannel Channel
+
+
+
+@page "/mint"
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Mint</h1>
+
+<p>
+    <input type="text" @bind="@hash" @oninput="OnHashInputEvent" />
+</p>
+
+<p>
+    <input type="text" @bind="@pk" @oninput="OnPkInputEvent" />
+</p>
+
+<p>
+    Hash: @hash
+</p>
+
+<p>
+    Sig: @signature
+</p>
+
+<p>
+    Sender: @me
+</p>
+
+<p>
+    Response: @response
+</p>
+
+<button class="btn btn-primary" @onclick="MintNow">Mint</button>
+
+@code {
+    private string hash = "5d41402abc4b2a76b9719d911017c592";
+    private string pk = string.Empty;
+    private string signature = string.Empty;
+    private string me = string.Empty;
+    private string response = string.Empty;
+
+    private void OnHashInputEvent(ChangeEventArgs args)
+    {
+        hash = args.Value.ToString();
+    }
+
+    private void OnPkInputEvent(ChangeEventArgs args)
+    {
+        pk = args.Value.ToString();
+    }
+
+    private async Task MintNow()
+    {
+        try
+        {
+            var signer = new MessageSigner();
+            signature = signer.HashAndSign(hash, pk);
+
+            me = signer.HashAndEcRecover(hash, signature);
+
+            var client = new Omnichain.OmnichainClient(Channel);
+            var request = new cila.Omnichain.MintRequest();
+            request.Hash = hash;
+            request.Sender = me;
+            request.Signature = signature;
+
+            OmnichainResponse omnichainResponse = await client.MintAsync(request);
+            response = omnichainResponse.ToString();
+        }
+        catch (Exception ex)
+        {
+            var e = ex;
+        }
+    }
+}
+

@@ -1,4 +1,4 @@
-﻿syntax = "proto3";
+﻿syntax = "proto3";  
 
 package cila;
 
@@ -6,10 +6,10 @@ option csharp_namespace = "cila.Omnichain";
 
 service Omnichain {
   rpc Mint (MintRequest) returns (OmnichainResponse) {
-
+    
   };
   rpc Transfer (TransferRequest) returns (OmnichainResponse) {
-
+      
   };
 }
 

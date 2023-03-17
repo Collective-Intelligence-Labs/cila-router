@@ -18,10 +18,11 @@ public class OmnichainService : Omnichain.OmnichainBase
     public override Task<OmnichainResponse> Mint(MintRequest request, ServerCallContext context)
     {
         var route = _router.Route();
+        var random = new Random();
 
         return Task.FromResult(new OmnichainResponse
         {
-            ChainId = 0,
+            ChainId = random.Next(2).ToString(),
             Success = true
         });
     }
@@ -29,10 +30,11 @@ public class OmnichainService : Omnichain.OmnichainBase
     public override Task<OmnichainResponse> Transfer(TransferRequest request, ServerCallContext context)
     {
         var route = _router.Route();
+        var random = new Random();
 
         return Task.FromResult(new OmnichainResponse
         {
-            ChainId = 0,
+            ChainId = random.Next(2).ToString(),
             Success = true
         });
     }
