@@ -7,13 +7,18 @@
 
 
 
-@page "/mint"
+@page "/transfer"
 
-<h1>Mint</h1>
+<h1>Transfer</h1>
 
 <p>
     Item hash: 
     <input type="text" @bind="@hash" @oninput="OnHashInputEvent" />
+</p>
+
+<p>
+    Transfer to:
+    <input type="text" @bind="@to" @oninput="OnToInputEvent" />
 </p>
 
 <p>
@@ -33,6 +38,10 @@
 </p>
 
 <p>
+    Transfer to: @to
+</p>
+
+<p>
     Sender: @me
 </p>
 
@@ -40,7 +49,7 @@
     Response: @response
 </p>
 
-<button class="btn btn-primary" @onclick="MintNow">Sign and mint</button>
+<button class="btn btn-primary" @onclick="TransferNow">Sign and transfer</button>
 
 @code {
     private string hash = "5d41402abc4b2a76b9719d911017c592";
@@ -48,6 +57,7 @@
     private string signature = string.Empty;
     private string me = string.Empty;
     private string response = string.Empty;
+    private string to = string.Empty;
 
     private void OnHashInputEvent(ChangeEventArgs args)
     {
@@ -59,7 +69,12 @@
         pk = args.Value.ToString();
     }
 
-    private async Task MintNow()
+    private void OnToInputEvent(ChangeEventArgs args)
+    {
+        to = args.Value.ToString();
+    }
+
+    private async Task TransferNow()
     {
         try
         {
@@ -69,12 +84,13 @@
             me = signer.HashAndEcRecover(hash, signature);
 
             var client = new Omnichain.OmnichainClient(Channel);
-            var request = new cila.Omnichain.MintRequest();
+            var request = new cila.Omnichain.TransferRequest();
             request.Hash = hash;
             request.Sender = me;
             request.Signature = signature;
+            request.Recipient = to;
 
-            OmnichainResponse omnichainResponse = await client.MintAsync(request);
+            OmnichainResponse omnichainResponse = await client.TransferAsync(request);
             response = omnichainResponse.ToString();
         }
         catch (Exception ex)

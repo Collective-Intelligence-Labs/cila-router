@@ -2,6 +2,8 @@
 using Nethereum.Web3;
 using Nethereum.Contracts;
 using System.Text;
+using Nethereum.Contracts.ContractHandlers;
+using Nethereum.RPC.Eth.DTOs;
 
 namespace cila.Omnichain.Infrastructure
 {
@@ -9,32 +11,24 @@ namespace cila.Omnichain.Infrastructure
     public class EthChainClient : IChainClient
     {
         private Web3 _web3;
-        public Contract _contract;
+        private ContractHandler _contract;
 
-        public EthChainClient(string rpc, string contract)
+        public EthChainClient(string rpc, string contract, string pk)
         {
-            _web3 = new Web3(rpc);
-            _contract = _web3.Eth.GetContract<OmnichainOperation>(contract);
-        }
-
-        public EthChainClient(string rpc, string contract, string abi)
-        {
-            _web3 = new Web3(rpc);
-            _contract = _web3.Eth.GetContract(abi, contract);
+            var account = new Nethereum.Web3.Accounts.Account(pk);
+            _web3 = new Web3(account, rpc);
+            _contract = _web3.Eth.GetContractHandler(contract);
         }
 
         public async Task SendAsync(OmnichainOperation op)
         {
-            var function = _contract.GetFunction("dispatch");
-            //var p = function.ConvertJsonToObjectInputParameters("{\n  \"opBytes\": \"hello\"\n}");
+            var function = _contract.GetFunction<DispatchFunction>();
+            var req = new DispatchFunction
+            {
+                OpBytes = op.ByteData
+            };
 
-
-            //var dispatchOperationHandler = _contract.GetFunction<OmnichainOperation>();
-            var result = function.CallAsync(op).GetAwaiter().GetResult;
-
-            
-
-            var a = 10;
+            var res = await function.CallAsync<string>(req);
         }
     }
 }

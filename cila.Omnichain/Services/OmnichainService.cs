@@ -7,6 +7,8 @@ namespace cila.Omnichain.Services;
 
 public class OmnichainService : Omnichain.OmnichainBase
 {
+    private const string PRIVATE_KEY = "dfef8681aa52ab2ed9c4a9208531dbe27f7ba27be492bd9facb500fd8697196b";
+
     private readonly RandomRouter _router;
 
     private readonly ILogger<OmnichainService> _logger;
@@ -21,45 +23,58 @@ public class OmnichainService : Omnichain.OmnichainBase
     {
         try
         {
-            var route = _router.Route().Result as EthChainClient;
-            var random = new Random();
+            var chain = await _router.GetExecutionChain();
+            var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
 
-            var op = new OmnichainOperation(Encoding.Unicode.GetBytes(request.ToString()));
+            var op = new OmnichainOperation(Encoding.Unicode.GetBytes(request.ToString()), request.ToString());
 
-            //await route.SendAsync(op);
+            await chainClient.SendAsync(op);
 
             return new OmnichainResponse
             {
-                ChainId = random.Next(2).ToString(),
+                ChainId = chain.ChainId.ToString(),
                 Success = true,
                 Sender = request.Sender
             };
         }
         catch (Exception ex)
         {
-            var e = ex.Message;
+            return new OmnichainResponse
+            {
+                ChainId = "-1",
+                Success = false,
+                Sender = ex.Message
+            };
+        }
+    }
+
+    public override async Task<OmnichainResponse> Transfer(TransferRequest request, ServerCallContext context)
+    {
+        try
+        {
+            var chain = await _router.GetExecutionChain();
+            var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
+
+            var op = new OmnichainOperation(Encoding.Unicode.GetBytes(request.ToString()), request.ToString());
+
+            await chainClient.SendAsync(op);
 
             return new OmnichainResponse
             {
-                ChainId = null,
-                Success = false,
+                ChainId = chain.ChainId.ToString(),
+                Success = true,
                 Sender = request.Sender
             };
         }
-        
-    }
-
-    public override Task<OmnichainResponse> Transfer(TransferRequest request, ServerCallContext context)
-    {
-        var route = _router.Route();
-        var random = new Random();
-
-        return Task.FromResult(new OmnichainResponse
+        catch (Exception ex)
         {
-            ChainId = random.Next(2).ToString(),
-            Success = true,
-            Sender = request.Sender
-        });
+            return new OmnichainResponse
+            {
+                ChainId = "-1",
+                Success = false,
+                Sender = ex.Message
+            };
+        }
     }
 }
 
