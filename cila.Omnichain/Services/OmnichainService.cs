@@ -45,7 +45,7 @@ public class OmnichainService : Omnichain.OmnichainBase
             {
                 AggregateId = ByteString.CopyFrom("cila", Encoding.Unicode),
                 CmdType = CommandType.MintNft,
-                CmdPayload = ByteString.CopyFrom(payload.ToString(), Encoding.Unicode),
+                CmdPayload = payload.ToByteString(),
                 CmdSignature = ByteString.CopyFrom(request.Signature, Encoding.Unicode)
             };
 
@@ -78,9 +78,28 @@ public class OmnichainService : Omnichain.OmnichainBase
             var chain = await _router.GetExecutionChain();
             var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
 
-            var op = new OmnichainOperation(Encoding.Unicode.GetBytes(request.ToString()), request.ToString());
+            var operation = new Operation
+            {
+                RouterId = ByteString.CopyFrom("cila", Encoding.Unicode)
+            };
 
-            //await chainClient.SendAsync(op);
+            var payload = new TransferNFTPayload
+            {
+                Hash = ByteString.CopyFrom(request.Hash, Encoding.Unicode),
+                To = ByteString.CopyFrom(request.Recipient, Encoding.Unicode)
+            };
+
+            var cmd = new Command
+            {
+                AggregateId = ByteString.CopyFrom("cila", Encoding.Unicode),
+                CmdType = CommandType.MintNft,
+                CmdPayload = payload.ToByteString(),
+                CmdSignature = ByteString.CopyFrom(request.Signature, Encoding.Unicode)
+            };
+
+            operation.Commands.Add(cmd);
+
+            await chainClient.SendAsync(operation);
 
             return new OmnichainResponse
             {

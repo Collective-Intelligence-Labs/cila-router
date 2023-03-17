@@ -5,18 +5,6 @@ using Nethereum.RPC.Eth.DTOs;
 
 namespace cila.Omnichain.Infrastructure
 {
-    public class OmnichainOperation
-    {
-        public byte[] ByteData { get; private set; }
-        public string JsonData { get; private set; }
-
-        public OmnichainOperation(byte[] opBytes, string json)
-        {
-            ByteData = opBytes;
-            JsonData = json;
-        }
-    }
-
     [Function("dispatch2", "string")]
     public class DispatchFunction : FunctionMessage
     {
