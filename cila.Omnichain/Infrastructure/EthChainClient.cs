@@ -4,6 +4,8 @@ using Nethereum.Contracts;
 using System.Text;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexTypes;
 
 namespace cila.Omnichain.Infrastructure
 {
@@ -12,11 +14,12 @@ namespace cila.Omnichain.Infrastructure
     {
         private Web3 _web3;
         private ContractHandler _contract;
+        private Account _account;
 
         public EthChainClient(string rpc, string contract, string pk)
         {
-            var account = new Nethereum.Web3.Accounts.Account(pk);
-            _web3 = new Web3(account, rpc);
+            _account = new Account(pk);
+            _web3 = new Web3(_account, rpc);
             _contract = _web3.Eth.GetContractHandler(contract);
         }
 
@@ -28,7 +31,8 @@ namespace cila.Omnichain.Infrastructure
                 OpBytes = op.ByteData
             };
 
-            var res = await function.CallAsync<string>(req);
+            var gasEstimate = await _contract.EstimateGasAsync<DispatchFunction>(req);
+            var res = await function.CallAsync<string>(req, from: _account.Address, gasEstimate, new HexBigInteger(0));
         }
     }
 }
