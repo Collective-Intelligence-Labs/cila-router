@@ -31,8 +31,9 @@ namespace cila.Omnichain.Infrastructure
                 OpBytes = Encoding.Unicode.GetBytes(op.ToString())
             };
 
-            var gasEstimate = await _contract.EstimateGasAsync<DispatchFunction>(req);
-            var res = await function.CallAsync<string>(req, from: _account.Address, gasEstimate, new HexBigInteger(0));
+            //var gasEstimate = await _contract.EstimateGasAsync<DispatchFunction>(req);
+            //var gasEstimate = await function.EstimateGasAsync()
+            var res = await function.CallAsync<string>(req, from: _account.Address, new HexBigInteger(300000), new HexBigInteger(0));
         }
     }
 }

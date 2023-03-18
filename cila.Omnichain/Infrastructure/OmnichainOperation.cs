@@ -5,7 +5,7 @@ using Nethereum.RPC.Eth.DTOs;
 
 namespace cila.Omnichain.Infrastructure
 {
-    [Function("dispatch2", "string")]
+    [Function("dispatch")]
     public class DispatchFunction : FunctionMessage
     {
         [Parameter("bytes", "opBytes")]

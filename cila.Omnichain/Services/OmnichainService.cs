@@ -10,6 +10,7 @@ namespace cila.Omnichain.Services;
 public class OmnichainService : Omnichain.OmnichainBase
 {
     private const string PRIVATE_KEY = "dfef8681aa52ab2ed9c4a9208531dbe27f7ba27be492bd9facb500fd8697196b";
+    private const string AGGREGATE_ID = "0x4215a6F868D07227f1e2827A6613d87A5961B5f6";
 
     private readonly RandomRouter _router;
 
@@ -28,11 +29,11 @@ public class OmnichainService : Omnichain.OmnichainBase
             var chain = await _router.GetExecutionChain();
             var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
 
-            
+
 
             var operation = new Operation
             {
-                RouterId = ByteString.CopyFrom("cila", Encoding.Unicode)
+                RouterId = ByteString.CopyFrom(Encoding.Unicode.GetBytes("cila"))
             };
 
             var payload = new MintNFTPayload
@@ -43,7 +44,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
             var cmd = new Command
             {
-                AggregateId = ByteString.CopyFrom("cila", Encoding.Unicode),
+                AggregateId = ByteString.CopyFrom(Encoding.Unicode.GetBytes(AGGREGATE_ID)),
                 CmdType = CommandType.MintNft,
                 CmdPayload = payload.ToByteString(),
                 CmdSignature = ByteString.CopyFrom(request.Signature, Encoding.Unicode)
