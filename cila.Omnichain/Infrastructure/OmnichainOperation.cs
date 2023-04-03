@@ -12,38 +12,23 @@ namespace cila.Omnichain.Infrastructure
         public byte[] OpBytes { get; set; }
     }
 
-    [Function("pull")]
-    public class PullFunction: FunctionMessage
+    public class Command
     {
-        [Parameter("uint", "_position")]
-        public int Position { get; set; }
+        public byte[] AggregateId { get; set; }
+        public uint CmdType { get; set; }
+        public byte[] CmdPayload { get; set; }
+        public byte[] CmdSignature { get; set; }
     }
 
-    [FunctionOutput]
-    public class PullEventsDTO : IFunctionOutputDTO
+    public class Operation1
     {
-        [Parameter("uint256", "position", 1)]
-        public BigInteger Position { get; set; }
+        public byte[] RouterId { get; set; }
+        public List<Command> Commands { get; set; }
 
-        [Parameter("DomainEvent[]", "events", 2)]
-        public List<OmniChainEvent> Events { get; set; }
-    }
-
-    public class OmniChainEvent
-    {
-        public string ChainID { get; set; }
-
-        public byte[] Payload { get; set; }
-
-        public int BlockNumber { get; set; }
-
-        public string AggregateID { get; set; }
-
-        public int EventNumber { get; set; }
-
-        public int EventType { get; set; }
-
-        public string EventHash { get; set; }
+        public Operation1()
+        {
+            Commands = new List<Command>();
+        }
 
     }
 }

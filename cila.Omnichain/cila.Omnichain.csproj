@@ -15,11 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nethereum.Web3" Version="4.13.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.52.0" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="7.0.4" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.52.0" />
     <PackageReference Include="Grpc.AspNetCore.Web" Version="2.52.0" />
+    <PackageReference Include="Nethereum.RPC" Version="4.14.0" />
+    <PackageReference Include="Nethereum.Web3" Version="4.14.0" />
   </ItemGroup>
 
   <ItemGroup>

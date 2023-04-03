@@ -43,10 +43,10 @@
 <button class="btn btn-primary" @onclick="MintNow">Sign and mint</button>
 
 @code {
-    private string hash = "5d41402abc4b2a76b9719d911017c592";
+    private string hash = "Some NFT";
     private string pk = string.Empty;
     private string signature = string.Empty;
-    private string me = string.Empty;
+    private string me = "5Fd258E46CF5c5b2Ad252C37b48aeF887E65fd6A";
     private string response = string.Empty;
 
     private void OnHashInputEvent(ChangeEventArgs args)
@@ -66,7 +66,7 @@
             var signer = new MessageSigner();
             signature = signer.HashAndSign(hash, pk);
 
-            me = signer.HashAndEcRecover(hash, signature);
+            //me = signer.HashAndEcRecover(hash, signature);
 
             var client = new Omnichain.OmnichainClient(Channel);
             var request = new cila.Omnichain.MintRequest();

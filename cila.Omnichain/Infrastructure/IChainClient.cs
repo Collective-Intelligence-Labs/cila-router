@@ -2,6 +2,6 @@
 {
     public interface IChainClient
     {
-        Task SendAsync(Operation op);
+        Task SendAsync(Operation1 op);
     }
 }

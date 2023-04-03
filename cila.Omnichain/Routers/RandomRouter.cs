@@ -17,8 +17,11 @@ namespace cila.Omnichain.Routers
             var random = new Random();
             var chain = random.Next() % 2 == 0 ? Chains.Ethereum : Chains.Gnosis;
 
-            var rpc = "https://eth-goerli.public.blastapi.io";
-            var contract = "0xCa1E5C04d9410B8cF075BbfD777f8F9246829150";
+			var rpc = "http://127.0.0.1:7545";
+			var contract = "0x9b89499cE43Fb6D95ABe0557362E4FAa02B2aeC0";
+
+            //var rpc = "https://eth-goerli.public.blastapi.io";
+            //var contract = "0xedC3Cc09dF964ddf939eCDc137F4833c96a62A2A";
 
 
             return await Task.FromResult(new ExecutionChain((int)chain, rpc, contract));
