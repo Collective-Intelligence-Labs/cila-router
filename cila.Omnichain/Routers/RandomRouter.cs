@@ -18,7 +18,7 @@ namespace cila.Omnichain.Routers
             var chain = random.Next() % 2 == 0 ? Chains.Ethereum : Chains.Gnosis;
 
 			var rpc = "http://127.0.0.1:7545";
-			var contract = "0x9b89499cE43Fb6D95ABe0557362E4FAa02B2aeC0";
+			var contract = "0xd853eb8Ef1bAb9F58806FDff86931484c9110Fe8";
 
             //var rpc = "https://eth-goerli.public.blastapi.io";
             //var contract = "0xedC3Cc09dF964ddf939eCDc137F4833c96a62A2A";

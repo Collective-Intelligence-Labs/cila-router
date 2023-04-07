@@ -66,6 +66,8 @@
             var signer = new MessageSigner();
             signature = signer.HashAndSign(hash, pk);
 
+            response = "Minting";
+
             //me = signer.HashAndEcRecover(hash, signature);
 
             var client = new Omnichain.OmnichainClient(Channel);

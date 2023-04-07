@@ -13,8 +13,8 @@ public class OmnichainService : Omnichain.OmnichainBase
 {
     //private const string PRIVATE_KEY = "dfef8681aa52ab2ed9c4a9208531dbe27f7ba27be492bd9facb500fd8697196b";
     //private const string PRIVATE_KEY = "11bcf8712793289e8bba856c63ac991256eda9c9e53e9d93cb360a313a1a2cda";
-    private const string PRIVATE_KEY = "0x4647b4c2ca4a070d72fe9c9c633c1f1f23ac5375d0da30ece0db6765aed8dac5";
-    private const string AGGREGATE_ID = "E512D6FCf560eb300d264f4260D08F0ef3Fef1A8";
+    private const string PRIVATE_KEY = "0x6203901f60ff32c60f7ffc98ba2449979615bf9eac90c470f52fc09b09a09b0b";
+    private const string AGGREGATE_ID = "8863F36E552Fd66296C0b3a3D2e4028105226DB7";  //"E512D6FCf560eb300d264f4260D08F0ef3Fef1A8";
 
     private readonly RandomRouter _router;
 
@@ -38,7 +38,7 @@ public class OmnichainService : Omnichain.OmnichainBase
             var signature = FromHexString(CalculateKeccak256("some sig"));
             var operation = new cila.Omnichain.Infrastructure.Operation1
             {
-                RouterId = FromHexString("B4B7f66d146613B1Cf4524cf47DE28db2b466567")
+                RouterId = FromHexString("E56AEaFD75c5cB891813f6A117FAFD24F7FD979A")
             };
 
             var payload = new MintNFTPayload
@@ -49,7 +49,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
             var cmd = new cila.Omnichain.Infrastructure.Command
             {
-                AggregateId = FromHexString(AGGREGATE_ID),
+                AggregateId = FromString(AGGREGATE_ID),
                 CmdType = (uint)CommandType.MintNft,
                 CmdPayload = payload.ToByteArray(),
                 CmdSignature = signature

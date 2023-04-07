@@ -52,15 +52,14 @@ namespace cila.Omnichain.Infrastructure
 
 
             var opBytes = pbOperation.ToByteArray();
-            var bs = BitConverter.ToString(opBytes);
-
+            
             // TODO
             var req = new DispatchFunction
             {
                 OpBytes = opBytes
             };
 
-            req.FromAddress = "0x56df413b990726847Ce8dEd1A77Cce2BC5dE4eDf";
+            req.FromAddress = "0xE56AEaFD75c5cB891813f6A117FAFD24F7FD979A";
             //req.FromAddress = "0x0E8AB7131548af0D9798375B1cc9B5d06322bD60";
 
             var _queryHandler = _web3.Eth.GetContractQueryHandler<DispatchFunction>();
