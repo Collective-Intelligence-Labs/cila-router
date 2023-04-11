@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using cila.Omnichain.Routers;
 using cila.Omnichain.Infrastructure;
 using System.Text;
 using Google.Protobuf;
@@ -16,27 +15,23 @@ public class OmnichainService : Omnichain.OmnichainBase
     private const string PRIVATE_KEY = "0x6203901f60ff32c60f7ffc98ba2449979615bf9eac90c470f52fc09b09a09b0b";
     private const string AGGREGATE_ID = "8863F36E552Fd66296C0b3a3D2e4028105226DB7";  //"E512D6FCf560eb300d264f4260D08F0ef3Fef1A8";
 
-    private readonly RandomRouter _router;
-
     private readonly ILogger<OmnichainService> _logger;
+    private readonly KafkaProducer _producer;
+    private readonly OperationDispatcher dispatcher;
 
-    public OmnichainService(ILogger<OmnichainService> logger)
+    public OmnichainService(ILogger<OmnichainService> logger, KafkaProducer producer, OperationDispatcher dispatcher)
     {
-        _router = new RandomRouter();
         _logger = logger;
+        _producer = producer;
+        this.dispatcher = dispatcher;
     }
-
-    
 
     public override async Task<OmnichainResponse> Mint(MintRequest request, ServerCallContext context)
     {
         try
         {
-            var chain = await _router.GetExecutionChain();
-            var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
-
             var signature = FromHexString(CalculateKeccak256("some sig"));
-            var operation = new cila.Omnichain.Infrastructure.Operation1
+            var operation = new cila.Omnichain.Infrastructure.OperationDto
             {
                 RouterId = FromHexString("E56AEaFD75c5cB891813f6A117FAFD24F7FD979A")
             };
@@ -47,7 +42,7 @@ public class OmnichainService : Omnichain.OmnichainBase
                 Owner = GetByteString(FromHexString(request.Sender))
             };
 
-            var cmd = new cila.Omnichain.Infrastructure.Command
+            var cmd = new cila.Omnichain.Infrastructure.CommandDto
             {
                 AggregateId = FromString(AGGREGATE_ID),
                 CmdType = (uint)CommandType.MintNft,
@@ -57,11 +52,14 @@ public class OmnichainService : Omnichain.OmnichainBase
 
             operation.Commands.Add(cmd);
 
-            await chainClient.SendAsync(operation);
+
+            await dispatcher.Dispatch(operation.ConvertToProtobuff());
+            //await chainClient.SendAsync(operation);
 
             return new OmnichainResponse
             {
-                ChainId = chain.ChainId.ToString(),
+               //replace here with something
+                ChainId = "chain Id",
                 Success = true,
                 Sender = request.Sender
             };
@@ -81,8 +79,8 @@ public class OmnichainService : Omnichain.OmnichainBase
     {
         try
         {
-            var chain = await _router.GetExecutionChain();
-            var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
+            //var chain = await _router.GetExecutionChain();
+            //var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
 
             //var operation = new Operation
             //{
@@ -109,7 +107,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
             return new OmnichainResponse
             {
-                ChainId = chain.ChainId.ToString(),
+                ChainId = "Not implemented",
                 Success = true,
                 Sender = request.Sender
             };

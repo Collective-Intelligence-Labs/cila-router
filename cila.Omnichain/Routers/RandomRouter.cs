@@ -1,46 +1,28 @@
 ﻿using System;
+using Cila;
 using cila.Omnichain.Infrastructure;
 using Nethereum.Web3;
 
-namespace cila.Omnichain.Routers
+namespace Cila.Omnichain.Routers
 {
-	public enum Chains
+	public class RandomRouter: IOmnichainRouter
 	{
-		Ethereum = 0,
-		Gnosis = 1
-	}
+        private readonly ChainsService chainsService;
 
-	public class RandomRouter
-	{
-        public async Task<ExecutionChain> GetExecutionChain()
+        public RandomRouter(ChainsService chainsService)
+		{
+            this.chainsService = chainsService;
+        }
+
+        public OmnichainRoute CalculateRoute(Command operation)
         {
-            var random = new Random();
-            var chain = random.Next() % 2 == 0 ? Chains.Ethereum : Chains.Gnosis;
-
-			var rpc = "http://127.0.0.1:7545";
-			var contract = "0xd853eb8Ef1bAb9F58806FDff86931484c9110Fe8";
-
-            //var rpc = "https://eth-goerli.public.blastapi.io";
-            //var contract = "0xedC3Cc09dF964ddf939eCDc137F4833c96a62A2A";
-
-
-            return await Task.FromResult(new ExecutionChain((int)chain, rpc, contract));
+            var chains = chainsService.GetAll();
+			Random random = new Random();
+       		int randomNumber = random.Next(chains.Count);
+        	var randomElement = chains.ElementAt(randomNumber);
+			return new OmnichainRoute{
+				ChainId = randomElement.Id
+			};
         }
     }
-
-	public class ExecutionChain
-	{
-		public int ChainId { get; private set; }
-		public string Rpc { get; private set; }
-		public string Contract { get; private set; }
-
-		public ExecutionChain(int id, string rpc, string contract)
-		{
-			ChainId = id;
-			Rpc = rpc;
-			Contract = contract;
-
-		}
-
-	}
 }

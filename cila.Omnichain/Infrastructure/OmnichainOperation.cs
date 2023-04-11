@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Google.Protobuf;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Contracts;
 using Nethereum.RPC.Eth.DTOs;
@@ -12,7 +13,7 @@ namespace cila.Omnichain.Infrastructure
         public byte[] OpBytes { get; set; }
     }
 
-    public class Command
+    public class CommandDto
     {
         public byte[] AggregateId { get; set; }
         public uint CmdType { get; set; }
@@ -20,15 +21,34 @@ namespace cila.Omnichain.Infrastructure
         public byte[] CmdSignature { get; set; }
     }
 
-    public class Operation1
+    public class OperationDto
     {
         public byte[] RouterId { get; set; }
-        public List<Command> Commands { get; set; }
+        public List<CommandDto> Commands { get; set; }
 
-        public Operation1()
+        public OperationDto()
         {
-            Commands = new List<Command>();
+            Commands = new List<CommandDto>();
         }
 
+        public Operation ConvertToProtobuff()
+        {
+            var pbOperation = new Operation()
+            {
+                RouterId = ByteString.CopyFrom(RouterId)
+            };
+
+            foreach (var c in Commands)
+            {
+                pbOperation.Commands.Add(new global::Command()
+                {
+                    AggregateId = ByteString.CopyFrom(c.AggregateId),
+                    CmdPayload = ByteString.CopyFrom(c.CmdPayload),
+                    CmdSignature = ByteString.CopyFrom(c.CmdSignature),
+                    CmdType = (CommandType)c.CmdType
+                });
+            }
+            return pbOperation;
+        }
     }
 }

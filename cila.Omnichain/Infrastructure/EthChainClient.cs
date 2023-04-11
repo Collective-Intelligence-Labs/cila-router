@@ -26,7 +26,7 @@ namespace cila.Omnichain.Infrastructure
             _contract = _web3.Eth.GetContractHandler(contract);
         }
 
-        public async Task SendAsync(Operation1 op)
+        public async Task<ChainResponse> SendAsync(Operation op)
         {
             if (op == null)
                 await Task.FromResult(true);
@@ -34,24 +34,8 @@ namespace cila.Omnichain.Infrastructure
             var function = _contract.GetFunction<DispatchFunction>();
 
             var abi = new ABIEncode();
-            var pbOperation = new Operation()
-            {
-                RouterId = ByteString.CopyFrom(op.RouterId)
-            };
 
-            foreach (var c in op.Commands)
-            {
-                pbOperation.Commands.Add(new global::Command()
-                {
-                    AggregateId = ByteString.CopyFrom(c.AggregateId),
-                    CmdPayload = ByteString.CopyFrom(c.CmdPayload),
-                    CmdSignature = ByteString.CopyFrom(c.CmdSignature),
-                    CmdType = (CommandType)c.CmdType
-                });
-            }
-
-
-            var opBytes = pbOperation.ToByteArray();
+            var opBytes = op.ToByteArray();
             
             // TODO
             var req = new DispatchFunction
@@ -59,19 +43,42 @@ namespace cila.Omnichain.Infrastructure
                 OpBytes = opBytes
             };
 
-            req.FromAddress = "0xE56AEaFD75c5cB891813f6A117FAFD24F7FD979A";
+            //req.FromAddress = "0xE56AEaFD75c5cB891813f6A117FAFD24F7FD979A";
             //req.FromAddress = "0x0E8AB7131548af0D9798375B1cc9B5d06322bD60";
+            req.FromAddress = _account.Address;
 
             var _queryHandler = _web3.Eth.GetContractQueryHandler<DispatchFunction>();
             var txHandler = _web3.Eth.GetContractTransactionHandler<DispatchFunction>();
             var gasEstimate = await txHandler.EstimateGasAsync(_contract.ContractAddress, req);
             req.Gas = gasEstimate.Value;
 
-            var res = await txHandler.SendRequestAsync(_contract.ContractAddress, req);
+            var receipt = await txHandler.SendRequestAndWaitForReceiptAsync(_contract.ContractAddress, req);
+            return new ChainResponse {
+                ContractAddress = receipt.ContractAddress,
+                EffectiveGasPrice = receipt.EffectiveGasPrice.ToUlong(),
+                GasUsed = receipt.GasUsed.ToUlong(),
+                CumulativeGasUsed = receipt.CumulativeGasUsed.ToUlong(),
+                BlockHash = receipt.BlockHash,
+                BlockNumber = receipt.BlockNumber.ToUlong(),
+                Logs = receipt.Logs.ToString()
+            };
             //var r = await _queryHandler.QueryAsync<int>(_contract.ContractAddress, req);
             //var res = await function.CallAsync<string>(req, from: _account.Address, new HexBigInteger(300000), new HexBigInteger(0));
         }
 
-        
+
+    }
+
+    public class ChainResponse
+    {
+        public string ContractAddress { get; set; }
+        public ulong EffectiveGasPrice { get; set; }
+        public ulong GasUsed { get; set; }
+        public ulong CumulativeGasUsed { get; set; }
+        public ulong BlockNumber { get; set; }
+        public string BlockHash { get; set; }
+        public ulong TransactionIndex { get; set; }
+        public string TransactionHash { get; set; }
+        public string Logs { get; set; }
     }
 }
