@@ -8,6 +8,8 @@ namespace Cila.Database {
 
         private string _dbname = "relay";
 
+        private string _dbnameAggregator = "aggregator";
+
         private class Collections {
             public static string Events  = "events";
             public static string Subscriptions  = "subscriptions";
@@ -33,7 +35,7 @@ namespace Cila.Database {
 
         public IMongoCollection<AggregatedEventDocument> GetAggregatedEventsCollection()
         {
-            return _client.GetDatabase(_dbname).GetCollection<AggregatedEventDocument>(Collections.AggregatedEvents);
+            return _client.GetDatabase(_dbnameAggregator).GetCollection<AggregatedEventDocument>(Collections.AggregatedEvents);
         }
 
         public IMongoCollection<ExecutionDocument> GetExecutionsCollection()

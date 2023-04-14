@@ -46,19 +46,35 @@ namespace cila
 
             foreach (var rOp in routedOperations)
             {
-                var client = clientsFactory.GetChainClient(rOp.ChainId);
-                var response = await client.SendAsync(rOp.Operation);
-                // Change with setting operation ID on the client
-                var operationId = settings.SingletonAggregateID + (aggregagtedEventsService.GetLastVersion(settings.SingletonAggregateID) + 1);
-                executionsService.Record(operationId, rOp.ChainId, response, context.Stretagy, router.GetType().Name);
+                var versionNullable = aggregagtedEventsService.GetLastVersion(settings.SingletonAggregateID);
+                var version = versionNullable.HasValue ? versionNullable + 1 : 0;
+                var operationId = settings.SingletonAggregateID + version;
+                try
+                {
+                    var client = clientsFactory.GetChainClient(rOp.ChainId);
+                    var response = await client.SendAsync(rOp.Operation);
+                    // Change with setting operation ID on the client
+
+                    executionsService.Record(operationId, rOp.ChainId, response, context.Stretagy, router.GetType().Name);
+                    
+                    //Send infrastructure event
+                    await ProduceInfrastructureEvent(rOp.ChainId, 
+                    /* TODO: replace with list of aggregates */ rOp.Operation.Commands.First().AggregateId.ToString(),
+                    operationId.ToString(),
+                    rOp.Operation.RouterId.ToString(),
+                    rOp.Operation.Commands.ToList(),
+                    null);
+                }
+                catch (System.Exception e)
+                {
+                    await ProduceInfrastructureEvent(rOp.ChainId, 
+                    /* TODO: replace with list of aggregates */ rOp.Operation.Commands.First().AggregateId.ToString(),
+                    operationId.ToString(),
+                    rOp.Operation.RouterId.ToString(),
+                    rOp.Operation.Commands.ToList(),
+                    e.Message);
+                }
                 
-                //Send infrastructure event
-                await ProduceInfrastructureEvent(rOp.ChainId, 
-                /* TODO: replace with list of aggregates */ rOp.Operation.Commands.First().AggregateId.ToString(),
-                operationId.ToString(),
-                rOp.Operation.RouterId.ToString(),
-                rOp.Operation.Commands.ToList(),
-                null);
             }
         }
 
