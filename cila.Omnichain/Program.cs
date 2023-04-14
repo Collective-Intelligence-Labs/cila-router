@@ -6,6 +6,8 @@ using Cila.Omnichain.Routers;
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Google.Protobuf;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 
 
@@ -48,6 +50,8 @@ builder.Services
     .AddScoped<SubscriptionsService>()
     .AddScoped<ExecutionsService>()
     .AddScoped<ChainClientsFactory>()
+    .AddScoped<AggregagtedEventsService>()
+    .AddScoped<OperationGenerator>()
     .AddSingleton(configProducer)
     .AddSingleton<KafkaProducer>()
     .AddScoped<RandomRouter>()
@@ -55,6 +59,7 @@ builder.Services
 
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
+//builder.Services.AddSwaggerGen();
 
 var serviceProvider = builder.Services.BuildServiceProvider();
 
@@ -86,6 +91,8 @@ IWebHostEnvironment env = app.Environment;
 if (env.IsDevelopment())
 {
     app.MapGrpcReflectionService();
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
 }
 
 app.UseGrpcWeb();
@@ -95,7 +102,26 @@ app.UseCors();
 app.MapGrpcService<OmnichainService>().EnableGrpcWeb();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
+app.MapPost("/route", async (HttpContext context) => 
+{   
+    using (var ms = new MemoryStream())
+    {
+        await context.Request.Body.CopyToAsync(ms);
+        byte[] bytes = ms.ToArray();
+        var operation = new Operation();
+        operation.MergeFrom(bytes);
+        var dispatcher = serviceProvider.GetService<OperationDispatcher>();
+        await dispatcher.Dispatch(operation);
+        context.Response.StatusCode = 200;
+        await context.Response.WriteAsync("Success");
+    }
+});
 
-
+app.MapGet("/generate/{number}", async (HttpContext context, int number) => 
+{
+    var opGen = serviceProvider.GetService<OperationGenerator>();
+    await opGen.GenerateAndSend(number);
+    await context.Response.WriteAsync("Success");
+});
 app.Run();
 

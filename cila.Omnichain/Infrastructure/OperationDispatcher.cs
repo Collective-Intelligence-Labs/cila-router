@@ -9,13 +9,17 @@ namespace cila
         private readonly ChainClientsFactory clientsFactory;
         private readonly ExecutionsService executionsService;
         private readonly KafkaProducer producer;
+        private readonly OmniChainSettings settings;
+        private readonly AggregagtedEventsService aggregagtedEventsService;
 
-        public OperationDispatcher(RouterProvider provider, ChainClientsFactory clientsFactory, ExecutionsService executionsService, KafkaProducer producer)
+        public OperationDispatcher(RouterProvider provider, ChainClientsFactory clientsFactory, ExecutionsService executionsService, KafkaProducer producer, OmniChainSettings settings, AggregagtedEventsService aggregagtedEventsService)
         {
             this.provider = provider;
             this.clientsFactory = clientsFactory;
             this.executionsService = executionsService;
             this.producer = producer;
+            this.settings = settings;
+            this.aggregagtedEventsService = aggregagtedEventsService;
         }
 
         public async Task Dispatch(Operation operation)
@@ -44,7 +48,8 @@ namespace cila
             {
                 var client = clientsFactory.GetChainClient(rOp.ChainId);
                 var response = await client.SendAsync(rOp.Operation);
-                var operationId = rOp.Operation.GetHashCode();
+                // Change with setting operation ID on the client
+                var operationId = settings.SingletonAggregateID + (aggregagtedEventsService.GetLastVersion(settings.SingletonAggregateID) + 1);
                 executionsService.Record(operationId, rOp.ChainId, response, context.Stretagy, router.GetType().Name);
                 
                 //Send infrastructure event

@@ -22,11 +22,11 @@ namespace Cila
                 .FirstOrDefault();
         }
 
-        public void Record(int operationId, string chainId, ChainResponse response, RoutingStrategy strategy, string router)
+        public void Record(string operationId, string chainId, ChainResponse response, RoutingStrategy strategy, string router)
         {
             database.GetExecutionsCollection().InsertOne(new ExecutionDocument{
                 Id = ObjectId.GenerateNewId().ToString(),
-                OperationId = operationId.ToString(),
+                OperationId = operationId,
                 ChainId = chainId,
                 ActualCost = response.GasUsed,
                 RouterStrategy = strategy,

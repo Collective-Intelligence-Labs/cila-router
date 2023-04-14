@@ -23,6 +23,7 @@
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
     <PackageReference Include="Nethereum.RPC" Version="4.14.0" />
     <PackageReference Include="Nethereum.Web3" Version="4.14.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

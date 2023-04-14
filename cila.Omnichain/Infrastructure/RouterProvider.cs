@@ -6,9 +6,9 @@ namespace Cila
 {
     public class RouterProvider
     {
-        private readonly ServiceProvider serviceProvider;
+        private readonly IServiceProvider serviceProvider;
 
-        public RouterProvider(ServiceProvider serviceProvider)
+        public RouterProvider(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }

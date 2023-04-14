@@ -1,6 +1,6 @@
 {
     "Settings": {
-      "RouterId": "ID",
+      "RouterId": "E56AEaFD75c5cB891813f6A117FAFD24F7FD979A",
       "SingletonAggregateID": "123456789",
       "MongoDBConnectionString": "mongodb://localhost:27017",
       "Chains": [

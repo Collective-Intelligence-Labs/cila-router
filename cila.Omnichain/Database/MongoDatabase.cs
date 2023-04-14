@@ -12,7 +12,8 @@ namespace Cila.Database {
             public static string Events  = "events";
             public static string Subscriptions  = "subscriptions";
             public static string Chains  = "chains";
-            public static string Executions  = "chains";
+            public static string Executions  = "executions";
+            public static string AggregatedEvents = "aggregated-events";
         }
 
         public MongoDatabase(OmniChainSettings settings)
@@ -28,6 +29,11 @@ namespace Cila.Database {
         public IMongoCollection<ChainDocument> GetChainsCollection()
         {
             return _client.GetDatabase(_dbname).GetCollection<ChainDocument>(Collections.Chains);
+        }
+
+        public IMongoCollection<AggregatedEventDocument> GetAggregatedEventsCollection()
+        {
+            return _client.GetDatabase(_dbname).GetCollection<AggregatedEventDocument>(Collections.AggregatedEvents);
         }
 
         public IMongoCollection<ExecutionDocument> GetExecutionsCollection()
