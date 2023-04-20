@@ -33,37 +33,34 @@ namespace cila.Omnichain.Infrastructure
 
             var function = _contract.GetFunction<DispatchFunction>();
 
-            var abi = new ABIEncode();
-
             var opBytes = op.ToByteArray();
             
-            // TODO
             var req = new DispatchFunction
             {
                 OpBytes = opBytes
             };
 
-            //req.FromAddress = "0xE56AEaFD75c5cB891813f6A117FAFD24F7FD979A";
-            //req.FromAddress = "0x0E8AB7131548af0D9798375B1cc9B5d06322bD60";
             req.FromAddress = _account.Address;
 
             var _queryHandler = _web3.Eth.GetContractQueryHandler<DispatchFunction>();
             var txHandler = _web3.Eth.GetContractTransactionHandler<DispatchFunction>();
+
             var gasEstimate = await txHandler.EstimateGasAsync(_contract.ContractAddress, req);
-            req.Gas = gasEstimate.Value;
+            req.Gas = gasEstimate;
 
             var receipt = await txHandler.SendRequestAndWaitForReceiptAsync(_contract.ContractAddress, req);
             return new ChainResponse {
+                ChainId = _web3.Eth.ChainId.SendRequestAsync().GetAwaiter().GetResult().ToString(),
                 ContractAddress = receipt.ContractAddress,
                 EffectiveGasPrice = receipt.EffectiveGasPrice.ToUlong(),
                 GasUsed = receipt.GasUsed.ToUlong(),
                 CumulativeGasUsed = receipt.CumulativeGasUsed.ToUlong(),
                 BlockHash = receipt.BlockHash,
                 BlockNumber = receipt.BlockNumber.ToUlong(),
-                Logs = receipt.Logs.ToString()
+                Logs = receipt.Logs.ToString(),
+                TransactionHash = receipt.TransactionHash,
+                TransactionIndex = receipt.TransactionIndex.ToUlong()
             };
-            //var r = await _queryHandler.QueryAsync<int>(_contract.ContractAddress, req);
-            //var res = await function.CallAsync<string>(req, from: _account.Address, new HexBigInteger(300000), new HexBigInteger(0));
         }
 
 
@@ -71,6 +68,7 @@ namespace cila.Omnichain.Infrastructure
 
     public class ChainResponse
     {
+        public string ChainId { get; set; }
         public string ContractAddress { get; set; }
         public ulong EffectiveGasPrice { get; set; }
         public ulong GasUsed { get; set; }

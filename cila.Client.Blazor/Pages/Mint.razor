@@ -12,20 +12,12 @@
 <h1>Mint</h1>
 
 <p>
-    Item hash: 
-    <input type="text" @bind="@hash" @oninput="OnHashInputEvent" style="width: 400px;"/>
-</p>
-
-<p>
-    Private key:
-    <textarea @bind="@pk" @oninput="OnPkInputEvent" style="width: 400px;"></textarea>
+    NFT data: 
+    <input type="text" @bind="@nftData" @oninput="OnHashInputEvent" style="width: 400px;"/>
 </p>
 
 <p>
     <h3>Data</h3>
-</p>
-<p>
-    Hash: @hash
 </p>
 
 <p>
@@ -43,15 +35,15 @@
 <button class="btn btn-primary" @onclick="MintNow">Sign and mint</button>
 
 @code {
-    private string hash = "Some NFT";
-    private string pk = string.Empty;
+    private string nftData = "My NFT";
+    private string pk = "a813851a121a15c924f24d4a2a316f6a0635714c05f939c5e760c22b45647d13";
     private string signature = string.Empty;
-    private string me = "5Fd258E46CF5c5b2Ad252C37b48aeF887E65fd6A";
+    private string me = "";
     private string response = string.Empty;
 
     private void OnHashInputEvent(ChangeEventArgs args)
     {
-        hash = args.Value.ToString();
+        nftData = args.Value.ToString();
     }
 
     private void OnPkInputEvent(ChangeEventArgs args)
@@ -64,15 +56,15 @@
         try
         {
             var signer = new MessageSigner();
-            signature = signer.HashAndSign(hash, pk);
+            signature = signer.HashAndSign(nftData, pk);
 
-            response = "Minting";
+            response = "Minting...";
 
-            //me = signer.HashAndEcRecover(hash, signature);
+            me = signer.HashAndEcRecover(nftData, signature);
 
             var client = new Omnichain.OmnichainClient(Channel);
             var request = new cila.Omnichain.MintRequest();
-            request.Hash = hash;
+            request.Hash = nftData;
             request.Sender = me;
             request.Signature = signature;
 

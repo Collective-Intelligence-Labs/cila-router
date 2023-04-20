@@ -30,9 +30,9 @@ message TransferRequest
 
 message OmnichainResponse
 {
-    string chain_id = 1;
-    bool success = 2;
-    string sender = 3;
+    bool success = 1;
+    string sender = 2;
+    repeated string logs = 3;
 }
 
 message ItemTransferedEvent  

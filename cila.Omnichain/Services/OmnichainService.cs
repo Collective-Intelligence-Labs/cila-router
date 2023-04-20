@@ -9,69 +9,65 @@ using Nethereum.Util;
 namespace cila.Omnichain.Services;
 
 public class OmnichainService : Omnichain.OmnichainBase
-{
-    //private const string PRIVATE_KEY = "dfef8681aa52ab2ed9c4a9208531dbe27f7ba27be492bd9facb500fd8697196b";
-    //private const string PRIVATE_KEY = "11bcf8712793289e8bba856c63ac991256eda9c9e53e9d93cb360a313a1a2cda";
-    private const string PRIVATE_KEY = "0x6203901f60ff32c60f7ffc98ba2449979615bf9eac90c470f52fc09b09a09b0b";
-    private const string AGGREGATE_ID = "8863F36E552Fd66296C0b3a3D2e4028105226DB7";  //"E512D6FCf560eb300d264f4260D08F0ef3Fef1A8";
-
+{ 
     private readonly ILogger<OmnichainService> _logger;
     private readonly KafkaProducer _producer;
     private readonly OperationDispatcher dispatcher;
+    private readonly OmniChainSettings settings;
 
-    public OmnichainService(ILogger<OmnichainService> logger, KafkaProducer producer, OperationDispatcher dispatcher)
+    public OmnichainService(ILogger<OmnichainService> logger, KafkaProducer producer, OperationDispatcher dispatcher, OmniChainSettings settings)
     {
         _logger = logger;
         _producer = producer;
         this.dispatcher = dispatcher;
+        this.settings = settings;
     }
 
     public override async Task<OmnichainResponse> Mint(MintRequest request, ServerCallContext context)
     {
         try
         {
-            var signature = FromHexString(CalculateKeccak256("some sig"));
             var operation = new cila.Omnichain.Infrastructure.OperationDto
             {
-                RouterId = FromHexString("E56AEaFD75c5cB891813f6A117FAFD24F7FD979A")
+                RouterId = FromHexString(settings.RouterId)
             };
 
             var payload = new MintNFTPayload
             {
-                Hash = GetByteString(FromHexString(CalculateKeccak256(request.Hash))), //GetByteString(FromHexString(request.Hash)),
+                Hash = GetByteString(FromHexString(CalculateKeccak256(request.Hash))),
                 Owner = GetByteString(FromHexString(request.Sender))
             };
 
             var cmd = new cila.Omnichain.Infrastructure.CommandDto
             {
-                AggregateId = FromString(AGGREGATE_ID),
+                AggregateId = FromString(settings.SingletonAggregateID),
                 CmdType = (uint)CommandType.MintNft,
                 CmdPayload = payload.ToByteArray(),
-                CmdSignature = signature
+                CmdSignature = FromHexString(request.Signature)
             };
 
             operation.Commands.Add(cmd);
 
-
-            await dispatcher.Dispatch(operation.ConvertToProtobuff());
-            //await chainClient.SendAsync(operation);
-
-            return new OmnichainResponse
+            var result = await dispatcher.Dispatch(operation.ConvertToProtobuff());
+            
+            var response = new OmnichainResponse
             {
-               //replace here with something
-                ChainId = "chain Id",
+                //replace here with something
                 Success = true,
                 Sender = request.Sender
             };
+            response.Logs.AddRange(result.Select(x => string.Format("Executed on chain {0}, tx: {1}", x.ChainId, x.TransactionHash)));
+            return response;
         }
         catch (Exception ex)
         {
-            return new OmnichainResponse
+            var response = new OmnichainResponse
             {
-                ChainId = "-1",
                 Success = false,
-                Sender = ex.Message
+                Sender = request.Sender
             };
+            response.Logs.Add(ex.Message);
+            return response;
         }
     }
 
@@ -107,7 +103,6 @@ public class OmnichainService : Omnichain.OmnichainBase
 
             return new OmnichainResponse
             {
-                ChainId = "Not implemented",
                 Success = true,
                 Sender = request.Sender
             };
@@ -116,7 +111,6 @@ public class OmnichainService : Omnichain.OmnichainBase
         {
             return new OmnichainResponse
             {
-                ChainId = "-1",
                 Success = false,
                 Sender = ex.Message
             };
@@ -131,6 +125,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
     private byte[] FromHexString(string str)
     {
+        str = str.StartsWith("0x") ? str.Substring(2) : str;
         return Enumerable.Range(0, str.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(str.Substring(x, 2), 16)).ToArray();
     }
 

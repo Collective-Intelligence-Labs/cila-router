@@ -19,9 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
   var cnfg = new ConfigurationBuilder();
-        var configuration = cnfg.AddJsonFile("settings.json")
+  var configuration = cnfg.AddJsonFile("settings.json")
             .Build();
-        var settings = configuration.GetSection("Settings").Get<OmniChainSettings>();
+  var settings = configuration.GetSection("Settings").Get<OmniChainSettings>();
 
 
  var configProducer = new ProducerConfig
