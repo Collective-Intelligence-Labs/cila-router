@@ -8,6 +8,7 @@ namespace Cila.Omnichain.Routers
 	public class RandomRouter: IOmnichainRouter
 	{
         private readonly ChainsService chainsService;
+        private object syncLock = new object();
 
         public RandomRouter(ChainsService chainsService)
 		{
@@ -17,12 +18,16 @@ namespace Cila.Omnichain.Routers
         public OmnichainRoute CalculateRoute(Command operation)
         {
             var chains = chainsService.GetAll();
-			Random random = new Random();
-       		int randomNumber = random.Next(chains.Count);
-        	var randomElement = chains.ElementAt(randomNumber);
-			return new OmnichainRoute{
-				ChainId = randomElement.Id
-			};
+            lock (syncLock)
+            {
+                Random random = new Random();
+                int randomNumber = random.Next(chains.Count);
+                var randomElement = chains.ElementAt(randomNumber);
+                return new OmnichainRoute
+                {
+                    ChainId = randomElement.Id
+                };
+            }
         }
     }
 }

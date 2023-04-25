@@ -14,14 +14,18 @@ namespace Cila
         }
 
         public void InitializeFromSettings(OmniChainSettings settings)
-        {  
+        {
+            var chainsInSettings = settings.Chains;
             var chains = GetAll();
+            var chainsToAdd = chainsInSettings.Where(x => !chains.Select(c => c.ChainId).Contains(x.ChainId)).ToList();
 
-            if (!chains.Any())
+            var chainsCollection = database.GetChainsCollection();
+            if (chainsToAdd.Any())
             {
-                 var chainsCollection = database.GetChainsCollection();
-                chainsCollection.InsertMany(settings.Chains.Select(x=> new ChainDocument{
+                chainsCollection.InsertMany(chainsToAdd.Select(x => new ChainDocument
+                {
                     Id = ObjectId.GenerateNewId().ToString(),
+                    ChainId = x.ChainId,
                     PrivateKey = x.PrivateKey,
                     CQRSContract = x.Contract,
                     RPC = x.Rpc,

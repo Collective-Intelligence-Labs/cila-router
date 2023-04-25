@@ -6,7 +6,7 @@ namespace Cila.Database {
     {
         private MongoClient _client;
 
-        private string _dbname = "relay";
+        private string _dbname = "router";
 
         private string _dbnameAggregator = "aggregator";
 

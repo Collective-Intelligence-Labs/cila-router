@@ -17,6 +17,8 @@
 
     public class ExecutionChainSettings
     {
+        public string ChainId { get; set; }
+
         public string Rpc { get; set; } 
 
         public string PrivateKey { get; set; }  

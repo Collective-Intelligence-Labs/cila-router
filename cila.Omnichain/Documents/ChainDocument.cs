@@ -4,6 +4,8 @@ namespace Cila
     {
         public string Id {get;set;}
 
+        public string ChainId { get; set; }
+
         public ExecutionChainType ChainType {get;set;}
 
         public string RPC {get;set;}

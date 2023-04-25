@@ -10,6 +10,7 @@ using System.ComponentModel;
 using Nethereum.ABI;
 using Nethereum.Contracts.QueryHandlers;
 using Google.Protobuf;
+using System.Numerics;
 
 namespace cila.Omnichain.Infrastructure
 {
@@ -46,7 +47,8 @@ namespace cila.Omnichain.Infrastructure
             var txHandler = _web3.Eth.GetContractTransactionHandler<DispatchFunction>();
 
             var gasEstimate = await txHandler.EstimateGasAsync(_contract.ContractAddress, req);
-            req.Gas = gasEstimate;
+            req.Gas = new BigInteger(2) * gasEstimate;
+            req.GasPrice = _web3.Eth.GasPrice.SendRequestAsync().GetAwaiter().GetResult();
 
             var receipt = await txHandler.SendRequestAndWaitForReceiptAsync(_contract.ContractAddress, req);
             return new ChainResponse {

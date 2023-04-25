@@ -19,8 +19,10 @@ namespace Cila
             {
                 case RoutingStrategy.Random:
                     return serviceProvider.GetService<RandomRouter>();
-                default:
+                case RoutingStrategy.Optimal:
                     return serviceProvider.GetService<EfficientRouter>();
+                default:
+                    return serviceProvider.GetService<RandomRouter>();
             }
         }
     }
@@ -49,7 +51,7 @@ namespace Cila
     {
         public RoutingStrategy Stretagy {get;set;}
 
-        public static RouterContext Default = new RouterContext{ Stretagy = RoutingStrategy.Optimal};
+        public static RouterContext Default = new RouterContext{ Stretagy = RoutingStrategy.Random};
     }
 
     public enum RoutingStrategy
