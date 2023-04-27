@@ -48,20 +48,23 @@ namespace cila.Omnichain.Infrastructure
 
             var gasEstimate = await txHandler.EstimateGasAsync(_contract.ContractAddress, req);
             req.Gas = new BigInteger(2) * gasEstimate;
-            req.GasPrice = _web3.Eth.GasPrice.SendRequestAsync().GetAwaiter().GetResult();
 
-            var receipt = await txHandler.SendRequestAndWaitForReceiptAsync(_contract.ContractAddress, req);
+            var gasPrice = _web3.Eth.GasPrice.SendRequestAsync().GetAwaiter().GetResult();
+            req.GasPrice = new BigInteger(2) * gasPrice;
+
+            var tx = await txHandler.SendRequestAsync(_contract.ContractAddress, req);
+            TransactionReceipt receipt = null; // await txHandler.SendRequestAndWaitForReceiptAsync(_contract.ContractAddress, req);
             return new ChainResponse {
                 ChainId = _web3.Eth.ChainId.SendRequestAsync().GetAwaiter().GetResult().ToString(),
-                ContractAddress = receipt.ContractAddress,
-                EffectiveGasPrice = receipt.EffectiveGasPrice.ToUlong(),
-                GasUsed = receipt.GasUsed.ToUlong(),
-                CumulativeGasUsed = receipt.CumulativeGasUsed.ToUlong(),
-                BlockHash = receipt.BlockHash,
-                BlockNumber = receipt.BlockNumber.ToUlong(),
-                Logs = receipt.Logs.ToString(),
-                TransactionHash = receipt.TransactionHash,
-                TransactionIndex = receipt.TransactionIndex.ToUlong()
+                ContractAddress = receipt?.ContractAddress ?? _contract.ContractAddress,
+                EffectiveGasPrice = receipt?.EffectiveGasPrice.ToUlong() ?? (ulong)req.GasPrice,
+                GasUsed = receipt?.GasUsed.ToUlong() ?? (ulong)req.Gas,
+                CumulativeGasUsed = receipt?.CumulativeGasUsed.ToUlong() ?? (ulong)req.Gas,
+                BlockHash = receipt?.BlockHash ?? "Unknown",
+                BlockNumber = receipt?.BlockNumber.ToUlong() ?? _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().GetAwaiter().GetResult().ToUlong(),
+                Logs = receipt?.Logs.ToString() ?? string.Empty,
+                TransactionHash = receipt?.TransactionHash ?? tx,
+                TransactionIndex = receipt?.TransactionIndex.ToUlong() ?? 0
             };
         }
 

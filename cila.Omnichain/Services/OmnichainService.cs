@@ -48,7 +48,7 @@ public class OmnichainService : Omnichain.OmnichainBase
 
             operation.Commands.Add(cmd);
 
-            var result = await dispatcher.Dispatch(operation.ConvertToProtobuff());
+            var result = await dispatcher.Dispatch(operation.ConvertToProtobuff(), settings.RouterId);
             
             var response = new OmnichainResponse
             {

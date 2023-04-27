@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Google.Protobuf;
 using Swashbuckle.AspNetCore.SwaggerGen;
-
-
+using cila.Omnichain.Documents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,7 +54,8 @@ builder.Services
     .AddSingleton(configProducer)
     .AddSingleton<KafkaProducer>()
     .AddScoped<RandomRouter>()
-    .AddScoped<EfficientRouter>();
+    .AddScoped<EfficientRouter>()
+    .AddScoped<ExecutionChainEventService>();
 
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
@@ -111,7 +111,7 @@ app.MapPost("/route", async (HttpContext context) =>
         var operation = new Operation();
         operation.MergeFrom(bytes);
         var dispatcher = serviceProvider.GetService<OperationDispatcher>();
-        await dispatcher.Dispatch(operation);
+        await dispatcher.Dispatch(operation, settings.RouterId);
         context.Response.StatusCode = 200;
         await context.Response.WriteAsync("Success");
     }

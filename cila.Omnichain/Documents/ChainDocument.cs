@@ -2,6 +2,7 @@ namespace Cila
 {
     public class ChainDocument
     {
+
         public string Id {get;set;}
 
         public string ChainId { get; set; }

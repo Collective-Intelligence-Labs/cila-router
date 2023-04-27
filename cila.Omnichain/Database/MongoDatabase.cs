@@ -1,3 +1,4 @@
+using cila.Omnichain.Documents;
 using MongoDB.Driver;
 
 namespace Cila.Database {
@@ -6,7 +7,7 @@ namespace Cila.Database {
     {
         private MongoClient _client;
 
-        private string _dbname = "router";
+        private string _dbname = "relay";
 
         private string _dbnameAggregator = "aggregator";
 
@@ -26,6 +27,11 @@ namespace Cila.Database {
         public IMongoCollection<SubscriptionDocument> GetSubscriptionsCollection()
         {
             return _client.GetDatabase(_dbname).GetCollection<SubscriptionDocument>(Collections.Subscriptions);
+        }
+
+        public IMongoCollection<ExecutionChainEventDocument> GetEventsCollection()
+        {
+            return _client.GetDatabase(_dbname).GetCollection<ExecutionChainEventDocument>(Collections.Events);
         }
 
         public IMongoCollection<ChainDocument> GetChainsCollection()

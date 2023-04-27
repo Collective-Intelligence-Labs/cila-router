@@ -24,7 +24,7 @@ namespace Cila
             {
                 chainsCollection.InsertMany(chainsToAdd.Select(x => new ChainDocument
                 {
-                    Id = ObjectId.GenerateNewId().ToString(),
+                    Id = x.ChainId,
                     ChainId = x.ChainId,
                     PrivateKey = x.PrivateKey,
                     CQRSContract = x.Contract,

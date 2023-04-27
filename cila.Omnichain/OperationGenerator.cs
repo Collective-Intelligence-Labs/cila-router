@@ -33,7 +33,7 @@ namespace Cila
 
             foreach (var op in operations)
             {
-                await dispatcher.Dispatch(op);
+                await dispatcher.Dispatch(op, settings.RouterId);
             }
         }
 
