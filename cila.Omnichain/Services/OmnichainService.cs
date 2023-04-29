@@ -75,45 +75,47 @@ public class OmnichainService : Omnichain.OmnichainBase
     {
         try
         {
-            //var chain = await _router.GetExecutionChain();
-            //var chainClient = new EthChainClient(chain.Rpc, chain.Contract, PRIVATE_KEY);
-
-            //var operation = new Operation
-            //{
-            //    RouterId = GetByteString(FromHexString("B4B7f66d146613B1Cf4524cf47DE28db2b466567"))
-            //};
-
-            //var payload = new TransferNFTPayload
-            //{
-            //    Hash = GetByteString(FromHexString(CalculateKeccak256("Some NFT"))), //GetByteString(FromHexString(request.Hash)),
-            //    To = GetByteString(FromHexString(request.Recipient))
-            //};
-
-            //var cmd = new Command
-            //{
-            //    AggregateId = ByteString.CopyFrom("cila", Encoding.Unicode),
-            //    CmdType = CommandType.MintNft,
-            //    CmdPayload = payload.ToByteString(),
-            //    CmdSignature = ByteString.CopyFrom(request.Signature, Encoding.Unicode)
-            //};
-
-            //operation.Commands.Add(cmd);
-
-            //await chainClient.SendAsync(operation);
-
-            return new OmnichainResponse
+            var operation = new cila.Omnichain.Infrastructure.OperationDto
             {
+                RouterId = FromHexString(settings.RouterId)
+            };
+
+            var payload = new TransferNFTPayload
+            {
+                Hash = GetByteString(FromHexString(CalculateKeccak256(request.Hash))),
+                To = GetByteString(FromHexString(request.Recipient))
+            };
+
+            var cmd = new cila.Omnichain.Infrastructure.CommandDto
+            {
+                AggregateId = FromString(settings.SingletonAggregateID),
+                CmdType = (uint)CommandType.TransferNft,
+                CmdPayload = payload.ToByteArray(),
+                CmdSignature = FromHexString(request.Signature)
+            };
+
+            operation.Commands.Add(cmd);
+
+            var result = await dispatcher.Dispatch(operation.ConvertToProtobuff(), settings.RouterId);
+
+            var response = new OmnichainResponse
+            {
+                //replace here with something
                 Success = true,
                 Sender = request.Sender
             };
+            response.Logs.AddRange(result.Select(x => string.Format("Executed on chain {0}, tx: {1}", x.ChainId, x.TransactionHash)));
+            return response;
         }
         catch (Exception ex)
         {
-            return new OmnichainResponse
+            var response = new OmnichainResponse
             {
                 Success = false,
-                Sender = ex.Message
+                Sender = request.Sender
             };
+            response.Logs.Add(ex.Message);
+            return response;
         }
     }
 

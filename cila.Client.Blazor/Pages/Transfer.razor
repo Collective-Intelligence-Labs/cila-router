@@ -12,8 +12,8 @@
 <h1>Transfer</h1>
 
 <p>
-    Item hash: 
-    <input type="text" @bind="@hash" @oninput="OnHashInputEvent" style="width: 400px;" />
+    NFT data: 
+    <input type="text" @bind="@nftData" @oninput="OnHashInputEvent" style="width: 400px;" />
 </p>
 
 <p>
@@ -22,15 +22,7 @@
 </p>
 
 <p>
-    Private key:
-    <textarea @bind="@pk" @oninput="OnPkInputEvent" style="width: 400px;"></textarea>
-</p>
-
-<p>
     <h3>Data</h3>
-</p>
-<p>
-    Hash: @hash
 </p>
 
 <p>
@@ -52,8 +44,8 @@
 <button class="btn btn-primary" @onclick="TransferNow">Sign and transfer</button>
 
 @code {
-    private string hash = "5d41402abc4b2a76b9719d911017c592";
-    private string pk = string.Empty;
+    private string nftData = "";
+    private string pk = "a813851a121a15c924f24d4a2a316f6a0635714c05f939c5e760c22b45647d13";
     private string signature = string.Empty;
     private string me = string.Empty;
     private string response = string.Empty;
@@ -61,12 +53,7 @@
 
     private void OnHashInputEvent(ChangeEventArgs args)
     {
-        hash = args.Value.ToString();
-    }
-
-    private void OnPkInputEvent(ChangeEventArgs args)
-    {
-        pk = args.Value.ToString();
+        nftData = args.Value.ToString();
     }
 
     private void OnToInputEvent(ChangeEventArgs args)
@@ -79,13 +66,15 @@
         try
         {
             var signer = new MessageSigner();
-            signature = signer.HashAndSign(hash, pk);
+            signature = signer.HashAndSign(nftData, pk);
 
-            me = signer.HashAndEcRecover(hash, signature);
+            response = "Transferring...";
+
+            me = signer.HashAndEcRecover(nftData, signature);
 
             var client = new Omnichain.OmnichainClient(Channel);
             var request = new cila.Omnichain.TransferRequest();
-            request.Hash = hash;
+            request.Hash = nftData;
             request.Sender = me;
             request.Signature = signature;
             request.Recipient = to;
